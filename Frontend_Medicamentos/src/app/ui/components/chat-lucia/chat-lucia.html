@@ -1,0 +1,78 @@
+@if (abierto()) {
+  <section class="chat tarjeta" role="dialog" aria-label="Chat con Lucía">
+    <header class="chat-cabecera">
+      <span class="avatar-lucia">L</span>
+      <div class="titulo">
+        <h2>Lucía</h2>
+        <p>Tu asistente de medicación</p>
+      </div>
+      @if (asistente.mensajes().length > 0) {
+        <button class="btn btn-fantasma btn-icono" (click)="asistente.vaciar()" title="Empezar de nuevo" aria-label="Empezar de nuevo">
+          <app-icono nombre="papelera" [tamano]="17" />
+        </button>
+      }
+      <button class="btn btn-fantasma btn-icono" (click)="alternar()" title="Cerrar" aria-label="Cerrar chat">
+        <app-icono nombre="cerrar" [tamano]="18" />
+      </button>
+    </header>
+
+    <div class="mensajes" #lista aria-live="polite">
+      @if (asistente.mensajes().length === 0) {
+        <div class="bienvenida">
+          <p>Hola, soy Lucía. Pregúntame qué te toca tomar y te lo digo.</p>
+          <div class="sugerencias">
+            @for (sugerencia of sugerencias; track sugerencia) {
+              <button class="chip" (click)="enviar(sugerencia)">{{ sugerencia }}</button>
+            }
+          </div>
+          <p class="aviso">Lucía no es médica. Ante cualquier duda de salud, consulta con tu médico o farmacéutico.</p>
+        </div>
+      }
+
+      @for (mensaje of asistente.mensajes(); track $index) {
+        <div class="burbuja" [class.mia]="mensaje.rol === 'usuario'">{{ mensaje.texto }}</div>
+      }
+
+      @if (asistente.pensando()) {
+        <div class="burbuja escribiendo" aria-label="Lucía está escribiendo"><span></span><span></span><span></span></div>
+      }
+
+      @if (asistente.error(); as error) {
+        <div class="error-chat">
+          <p>{{ error }}</p>
+          <button class="btn-mini" (click)="asistente.reintentar()">Reintentar</button>
+        </div>
+      }
+    </div>
+
+    <form class="entrada" (submit)="$event.preventDefault(); enviar()">
+      <textarea
+        #campo
+        class="input"
+        rows="1"
+        name="texto"
+        placeholder="Escribe tu pregunta…"
+        maxlength="2000"
+        [(ngModel)]="texto"
+        (keydown)="alPulsarTecla($event)"
+      ></textarea>
+      <button
+        class="btn btn-primario btn-icono enviar"
+        type="submit"
+        [disabled]="!texto.trim() || asistente.pensando()"
+        aria-label="Enviar"
+      >
+        <app-icono nombre="enviar" [tamano]="18" />
+      </button>
+    </form>
+  </section>
+}
+
+<button
+  class="burbuja-flotante"
+  [class.chat-abierto]="abierto()"
+  (click)="alternar()"
+  [attr.aria-label]="abierto() ? 'Cerrar chat' : 'Hablar con Lucía'"
+>
+  <app-icono [nombre]="abierto() ? 'cerrar' : 'chat'" [tamano]="26" />
+</button>

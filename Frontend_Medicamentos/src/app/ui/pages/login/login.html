@@ -1,0 +1,56 @@
+<app-marca-auth />
+
+<section class="auth-formulario">
+  <div class="auth-caja">
+    <h2>Bienvenido de nuevo</h2>
+    <p class="sub">Inicia sesión para ver tus medicamentos.</p>
+
+    <form [formGroup]="formulario" (ngSubmit)="enviar()" novalidate>
+      @if (error()) {
+        <div class="alerta" role="alert">{{ error() }}</div>
+      }
+
+      <div class="campo">
+        <label for="correo">Correo electrónico</label>
+        <input
+          id="correo"
+          type="email"
+          class="input"
+          formControlName="correo"
+          placeholder="tu@correo.com"
+          autocomplete="email"
+          [class.invalido]="invalido('correo')"
+        />
+        @if (invalido('correo')) {
+          <span class="error-campo">Introduce un correo válido.</span>
+        }
+      </div>
+
+      <div class="campo">
+        <label for="contrasena">Contraseña</label>
+        <input
+          id="contrasena"
+          type="password"
+          class="input"
+          formControlName="contrasena"
+          placeholder="••••••••"
+          autocomplete="current-password"
+          [class.invalido]="invalido('contrasena')"
+        />
+        @if (invalido('contrasena')) {
+          <span class="error-campo">La contraseña es obligatoria.</span>
+        }
+      </div>
+
+      <button type="submit" class="btn btn-primario btn-bloque" [disabled]="cargando()">
+        @if (cargando()) {
+          <span class="spinner"></span> Entrando…
+        } @else {
+          Iniciar sesión
+        }
+      </button>
+    </form>
+
+    <p class="auth-pie">¿No tienes cuenta? <a routerLink="/registro">Créala gratis</a></p>
+  </div>
+</section>

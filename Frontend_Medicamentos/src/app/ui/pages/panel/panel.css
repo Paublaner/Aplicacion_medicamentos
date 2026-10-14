@@ -1,0 +1,229 @@
+:host { display: block; min-height: 100vh; padding-bottom: 104px; } /* hueco para el botón del chat */
+
+.contenedor { width: 100%; max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+/* ----- Barra superior ----- */
+.barra {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--borde);
+  /* En el móvil, deja hueco para la barra de estado (hora, batería...) */
+  padding-top: env(safe-area-inset-top);
+}
+.barra-interior { display: flex; align-items: center; justify-content: space-between; height: 68px; }
+.logo { color: var(--morado-800); }
+.logo-icono.marca { background: var(--degradado); color: var(--blanco); }
+
+.usuario { display: flex; align-items: center; gap: 10px; }
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--morado-100);
+  color: var(--morado-700);
+  font-weight: 700;
+}
+.nombre-usuario { font-weight: 600; }
+
+/* ----- Hero ----- */
+.hero {
+  position: relative;
+  overflow: hidden;
+  margin-top: 28px;
+  padding: 32px;
+  border-radius: 24px;
+  background: var(--degradado);
+  color: var(--blanco);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  box-shadow: var(--sombra-lg);
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  right: -80px;
+  top: -140px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+}
+.hero > * { position: relative; z-index: 1; }
+.fecha { text-transform: capitalize; opacity: 0.8; font-weight: 500; }
+.hero h1 { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 800; margin-top: 4px; }
+.resumen { margin-top: 8px; opacity: 0.9; }
+
+.btn-blanco {
+  background: var(--blanco);
+  color: var(--morado-700);
+  box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.3);
+}
+.btn-blanco:hover { background: var(--morado-50); }
+
+/* ----- Selector de días ----- */
+.dias {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+}
+.dia {
+  position: relative;
+  border: 1.5px solid var(--borde);
+  background: var(--blanco);
+  border-radius: 14px;
+  padding: 14px 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.15s;
+}
+.dia:hover { border-color: var(--morado-400); color: var(--morado-700); }
+.dia.activo {
+  background: var(--morado-600);
+  border-color: var(--morado-600);
+  color: var(--blanco);
+  box-shadow: 0 8px 18px -8px rgba(124, 58, 237, 0.7);
+}
+.dia-corto { display: none; }
+.hoy {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--morado-800);
+  color: var(--blanco);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ----- Tarjetas de momento ----- */
+.momentos {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+.momento { padding: 20px; animation: aparecer 0.3s ease; }
+.momento header { display: flex; align-items: center; gap: 12px; }
+.momento header h2 { font-size: 1.05rem; font-weight: 700; }
+.momento header p { font-size: 0.8rem; color: var(--texto-suave); }
+.momento header .badge { margin-left: auto; }
+
+.icono-momento {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--morado-100);
+  color: var(--morado-600);
+}
+.icono-momento[data-momento='Comida'] { background: var(--morado-200); color: var(--morado-700); }
+.icono-momento[data-momento='Cena'] { background: var(--morado-800); color: var(--blanco); }
+
+.lista { margin-top: 16px; display: flex; flex-direction: column; gap: 10px; }
+
+.medicamento {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--morado-50);
+  border: 1px solid transparent;
+  transition: border-color 0.15s, background 0.15s;
+}
+.medicamento:hover { border-color: var(--morado-200); background: var(--blanco); }
+.pastilla {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--blanco);
+  color: var(--morado-600);
+  box-shadow: var(--sombra-sm);
+}
+.info { flex: 1; min-width: 0; }
+.cabecera { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.info h3 { font-size: 0.95rem; font-weight: 700; }
+.info p { margin-top: 4px; font-size: 0.85rem; color: var(--texto-suave); overflow-wrap: anywhere; }
+.borrar:hover { color: var(--peligro) !important; background: var(--peligro-suave) !important; }
+
+.confirmar {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.btn-mini {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--morado-100);
+  color: var(--morado-700);
+}
+.btn-mini:hover { background: var(--morado-200); }
+.btn-mini.peligro { background: var(--peligro); color: var(--blanco); }
+.btn-mini:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 22px 12px;
+  border: 1.5px dashed var(--morado-200);
+  border-radius: 14px;
+  color: var(--texto-suave);
+  font-size: 0.9rem;
+}
+
+.error-carga {
+  margin-top: 24px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  color: var(--peligro);
+}
+.error-carga p { color: var(--texto); }
+
+/* ----- Responsive ----- */
+@media (max-width: 960px) {
+  .momentos { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 720px) {
+  .contenedor { padding: 0 16px; }
+  .hero { flex-direction: column; align-items: flex-start; padding: 24px; }
+  .hero .btn { width: 100%; }
+  .dias { gap: 6px; }
+  .dia { padding: 12px 2px; font-size: 0.85rem; }
+  .dia-largo { display: none; }
+  .dia-corto { display: inline; }
+  .nombre-usuario { display: none; }
+}

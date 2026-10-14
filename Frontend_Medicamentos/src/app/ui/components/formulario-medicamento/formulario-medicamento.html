@@ -1,0 +1,109 @@
+<div class="fondo" (click)="cerrar.emit()"></div>
+
+<div class="modal" role="dialog" aria-modal="true" aria-labelledby="titulo-modal">
+  <header>
+    <div class="titulo">
+      <span class="icono-titulo"><app-icono nombre="pastilla" [tamano]="22" /></span>
+      <div>
+        <h2 id="titulo-modal">Nuevo medicamento</h2>
+        <p>Añádelo al día y momento en que debes tomarlo.</p>
+      </div>
+    </div>
+    <button type="button" class="btn btn-fantasma btn-icono" (click)="cerrar.emit()" aria-label="Cerrar">
+      <app-icono nombre="cerrar" />
+    </button>
+  </header>
+
+  <form [formGroup]="formulario" (ngSubmit)="guardar()" novalidate>
+    @if (error()) {
+      <div class="alerta" role="alert">{{ error() }}</div>
+    }
+
+    <div class="campo">
+      <label for="nombre">Nombre</label>
+      <input
+        id="nombre"
+        class="input"
+        formControlName="nombre"
+        placeholder="Ej. Paracetamol"
+        [class.invalido]="invalido('nombre')"
+      />
+      @if (invalido('nombre')) {
+        <span class="error-campo">El nombre es obligatorio.</span>
+      }
+    </div>
+
+    <div class="campo">
+      <label for="descripcion">Descripción</label>
+      <textarea
+        id="descripcion"
+        class="input"
+        formControlName="descripcion"
+        placeholder="Para qué es o alguna indicación (tomar con agua, en ayunas…)"
+        [class.invalido]="invalido('descripcion')"
+      ></textarea>
+      @if (invalido('descripcion')) {
+        <span class="error-campo">La descripción es obligatoria.</span>
+      }
+    </div>
+
+    <div class="campo">
+      <label>Cantidad</label>
+      <div class="chips">
+        @for (opcion of cantidades; track opcion.valor) {
+          <button
+            type="button"
+            class="chip"
+            [class.activo]="formulario.controls.cantidad.value === opcion.valor"
+            (click)="formulario.controls.cantidad.setValue(opcion.valor)"
+          >
+            {{ opcion.etiqueta }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="campo">
+      <label>Día de la semana</label>
+      <div class="chips">
+        @for (dia of dias; track dia.valor) {
+          <button
+            type="button"
+            class="chip"
+            [class.activo]="formulario.controls.diaSemana.value === dia.valor"
+            (click)="formulario.controls.diaSemana.setValue(dia.valor)"
+          >
+            {{ dia.corta }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="campo">
+      <label>Momento del día</label>
+      <div class="chips">
+        @for (momento of momentos; track momento.valor) {
+          <button
+            type="button"
+            class="chip"
+            [class.activo]="formulario.controls.momentoDia.value === momento.valor"
+            (click)="formulario.controls.momentoDia.setValue(momento.valor)"
+          >
+            {{ momento.etiqueta }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <footer>
+      <button type="button" class="btn btn-secundario" (click)="cerrar.emit()">Cancelar</button>
+      <button type="submit" class="btn btn-primario" [disabled]="guardando()">
+        @if (guardando()) {
+          <span class="spinner"></span> Guardando…
+        } @else {
+          <app-icono nombre="check" [tamano]="18" /> Guardar medicamento
+        }
+      </button>
+    </footer>
+  </form>
+</div>

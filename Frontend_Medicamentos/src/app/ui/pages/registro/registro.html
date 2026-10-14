@@ -1,0 +1,72 @@
+<app-marca-auth />
+
+<section class="auth-formulario">
+  <div class="auth-caja">
+    <h2>Crea tu cuenta</h2>
+    <p class="sub">Empieza a organizar tu medicación en un minuto.</p>
+
+    <form [formGroup]="formulario" (ngSubmit)="enviar()" novalidate>
+      @if (error()) {
+        <div class="alerta" role="alert">{{ error() }}</div>
+      }
+
+      <div class="campo">
+        <label for="nombre">Nombre</label>
+        <input
+          id="nombre"
+          type="text"
+          class="input"
+          formControlName="nombre"
+          placeholder="¿Cómo te llamas?"
+          autocomplete="name"
+          [class.invalido]="invalido('nombre')"
+        />
+        @if (invalido('nombre')) {
+          <span class="error-campo">El nombre es obligatorio.</span>
+        }
+      </div>
+
+      <div class="campo">
+        <label for="correo">Correo electrónico</label>
+        <input
+          id="correo"
+          type="email"
+          class="input"
+          formControlName="correo"
+          placeholder="tu@correo.com"
+          autocomplete="email"
+          [class.invalido]="invalido('correo')"
+        />
+        @if (invalido('correo')) {
+          <span class="error-campo">Introduce un correo válido.</span>
+        }
+      </div>
+
+      <div class="campo">
+        <label for="contrasena">Contraseña</label>
+        <input
+          id="contrasena"
+          type="password"
+          class="input"
+          formControlName="contrasena"
+          placeholder="Mínimo 8 caracteres"
+          autocomplete="new-password"
+          [class.invalido]="invalido('contrasena')"
+        />
+        @if (invalido('contrasena')) {
+          <span class="error-campo">La contraseña debe tener entre 8 y 100 caracteres.</span>
+        }
+      </div>
+
+      <button type="submit" class="btn btn-primario btn-bloque" [disabled]="cargando()">
+        @if (cargando()) {
+          <span class="spinner"></span> Creando cuenta…
+        } @else {
+          Crear cuenta
+        }
+      </button>
+    </form>
+
+    <p class="auth-pie">¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a></p>
+  </div>
+</section>

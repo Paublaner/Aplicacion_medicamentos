@@ -1,0 +1,140 @@
+<header class="barra">
+  <div class="contenedor barra-interior">
+    <div class="logo">
+      <span class="logo-icono marca"><app-icono nombre="pastilla" [tamano]="20" /></span>
+      MediTrack
+    </div>
+
+    <div class="usuario">
+      <span class="avatar">{{ auth.usuario()?.nombre?.charAt(0)?.toUpperCase() }}</span>
+      <span class="nombre-usuario">{{ auth.usuario()?.nombre }}</span>
+      <button class="btn btn-fantasma btn-icono" (click)="cerrarSesion()" title="Cerrar sesión" aria-label="Cerrar sesión">
+        <app-icono nombre="salir" [tamano]="18" />
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="contenedor">
+  <section class="hero">
+    <div>
+      <p class="fecha">{{ fechaHoy }}</p>
+      <h1>Hola, {{ auth.usuario()?.nombre }}</h1>
+      <p class="resumen">
+        @if (cargando()) {
+          Cargando tu medicación…
+        } @else if (total() === 0) {
+          No tienes medicamentos para el {{ etiquetaDia().toLowerCase() }}.
+        } @else {
+          Tienes <strong>{{ total() }}</strong> {{ total() === 1 ? 'medicamento' : 'medicamentos' }} para el
+          {{ etiquetaDia().toLowerCase() }}.
+        }
+      </p>
+    </div>
+    <button class="btn btn-blanco" (click)="abrirFormulario()">
+      <app-icono nombre="mas" [tamano]="18" /> Añadir medicamento
+    </button>
+  </section>
+
+  <nav class="dias" aria-label="Día de la semana">
+    @for (dia of dias; track dia.valor) {
+      <button
+        class="dia"
+        [class.activo]="diaSeleccionado() === dia.valor"
+        [attr.aria-pressed]="diaSeleccionado() === dia.valor"
+        (click)="seleccionarDia(dia.valor)"
+      >
+        <span class="dia-corto">{{ dia.corta }}</span>
+        <span class="dia-largo">{{ dia.etiqueta }}</span>
+        @if (dia.valor === hoy) {
+          <span class="hoy">Hoy</span>
+        }
+      </button>
+    }
+  </nav>
+
+  @if (errorCarga()) {
+    <div class="tarjeta error-carga">
+      <app-icono nombre="alerta" [tamano]="22" />
+      <p>{{ errorCarga() }}</p>
+      <button class="btn btn-secundario" (click)="cargar()">Reintentar</button>
+    </div>
+  } @else {
+    <section class="momentos">
+      @for (momento of momentos; track momento.valor) {
+        <article class="tarjeta momento">
+          <header>
+            <span class="icono-momento" [attr.data-momento]="momento.valor">
+              <app-icono [nombre]="iconoMomento[momento.valor]" [tamano]="20" />
+            </span>
+            <div>
+              <h2>{{ momento.etiqueta }}</h2>
+              <p>{{ momento.hora }}</p>
+            </div>
+            @if (!cargando()) {
+              <span class="badge">{{ medicamentos()[momento.valor].length }}</span>
+            }
+          </header>
+
+          <div class="lista">
+            @if (cargando()) {
+              <div class="skeleton" style="height: 64px"></div>
+              <div class="skeleton" style="height: 64px"></div>
+            } @else {
+              @for (med of medicamentos()[momento.valor]; track med.id) {
+                <div class="medicamento">
+                  <span class="pastilla"><app-icono nombre="pastilla" [tamano]="18" /></span>
+                  <div class="info">
+                    <div class="cabecera">
+                      <h3>{{ med.nombre }}</h3>
+                      <span class="badge">{{ etiquetaCantidad(med.cantidad) }}</span>
+                    </div>
+                    <p>{{ med.descripcion }}</p>
+
+                    @if (confirmando() === clave(med)) {
+                      <div class="confirmar">
+                        <span>¿Eliminar?</span>
+                        <button class="btn-mini peligro" [disabled]="eliminando() === clave(med)" (click)="eliminar(med)">
+                          {{ eliminando() === clave(med) ? 'Eliminando…' : 'Sí, eliminar' }}
+                        </button>
+                        <button class="btn-mini" (click)="confirmando.set(null)">Cancelar</button>
+                      </div>
+                    }
+                  </div>
+                  @if (confirmando() !== clave(med)) {
+                    <button
+                      class="btn btn-fantasma btn-icono borrar"
+                      (click)="confirmando.set(clave(med))"
+                      [attr.aria-label]="'Eliminar ' + med.nombre"
+                      title="Eliminar"
+                    >
+                      <app-icono nombre="papelera" [tamano]="17" />
+                    </button>
+                  }
+                </div>
+              } @empty {
+                <div class="vacio">
+                  <p>Nada que tomar</p>
+                  <button class="btn-mini" (click)="abrirFormulario(momento.valor)">
+                    <app-icono nombre="mas" [tamano]="14" /> Añadir
+                  </button>
+                </div>
+              }
+            }
+          </div>
+        </article>
+      }
+    </section>
+  }
+</main>
+
+@if (modal(); as m) {
+  <app-formulario-medicamento
+    [diaInicial]="m.dia"
+    [momentoInicial]="m.momento"
+    (guardado)="alGuardar($event)"
+    (cerrar)="modal.set(null)"
+  />
+}
+
+<app-chat-lucia />
