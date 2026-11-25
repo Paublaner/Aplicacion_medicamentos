@@ -54,25 +54,22 @@ public class UsuarioController (IUsuarioServicio usuarioServicio,
         return Ok();
     }
 
-    [HttpGet("usuarios")]
+    [HttpPost("usuarios/login")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> ObtenerUsuarioPorNombre(string correo, string contrasena, CancellationToken cancellationToken)
+    public async Task<IActionResult> LoginUsuarios([FromBody] LoginUsuarioDto loginDto, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(correo))
+        if (string.IsNullOrEmpty(loginDto.Correo))
         {
             _log.LogError("Error en el correo");
-            return BadRequest("El nombre de usuario no puede estar vacío.");
+            return BadRequest("El correo no puede estar vacío.");
         }
-        if (string.IsNullOrEmpty(contrasena))
+        if (string.IsNullOrEmpty(loginDto.Contrasena))
         {
             _log.LogError("Error en la contraseña");
             return BadRequest("La contraseña no puede estar vacía.");
         }
-        var usuario = await _usuarioServicio.ObtenerUsuarioPorNombreAsync(correo, contrasena, cancellationToken);
-
-        // 401 y el mismo mensaje tanto si el correo no existe como si la contraseña es incorrecta,
-        // para no revelar qué correos están registrados
+        var usuario = await _usuarioServicio.ObtenerUsuarioPorNombreAsync(loginDto.Correo, loginDto.Contrasena, cancellationToken);
         if (usuario == null)
         {
             _log.LogError("Credenciales incorrectas");
@@ -87,7 +84,6 @@ public class UsuarioController (IUsuarioServicio usuarioServicio,
             return StatusCode(500, new { mensaje = "Error al generar el refresh token" });
         }
 
-        // No se devuelve el objeto Usuario entero porque incluye el hash de la contraseña
         return Ok(new
         {
             token,

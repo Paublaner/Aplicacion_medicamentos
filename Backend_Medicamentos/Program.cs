@@ -26,6 +26,20 @@ builder.Services.AddScoped<IRefreshTokenPersistencia, RefreshTokenAdapter>();
 builder.Services.AddDbContext<PostgresContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("Fixed", options =>
+    {
+        options.PermitLimit = 100; // Número máximo de solicitudes permitidas
+        options.Window = TimeSpan.FromMinutes(1); // Ventana de tiempo
+        options.QueueProcessingOrder = System.Threading.RateLimiting.QueueProcessingOrder.OldestFirst;
+        options.QueueLimit = 0; // No permitir solicitudes en cola
+    });
+});
+
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -57,7 +71,7 @@ builder.Services.AddCors(options =>
         }
         else
         {
-            policy.WithOrigins("https://app.flutterflow.io")
+            policy.WithOrigins("https://localhost")
                 .AllowAnyMethod()
                 .AllowAnyHeader();
         }
@@ -65,16 +79,6 @@ builder.Services.AddCors(options =>
 });
 
 
-builder.Services.AddRateLimiter(options =>
-{ 
-    options.AddFixedWindowLimiter("Fixed", options =>
-    {
-        options.PermitLimit = 100; // Número máximo de solicitudes permitidas
-        options.Window = TimeSpan.FromMinutes(1); // Ventana de tiempo
-        options.QueueProcessingOrder = System.Threading.RateLimiting.QueueProcessingOrder.OldestFirst;
-        options.QueueLimit = 0; // No permitir solicitudes en cola
-    });
-});
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>

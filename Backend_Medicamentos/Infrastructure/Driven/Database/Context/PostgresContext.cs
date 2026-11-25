@@ -29,7 +29,7 @@ public class PostgresContext : DbContext
 
         modelBuilder.Entity<UsuarioEntity>()
          .ToTable("Usuarios");
-        // Tabla independiente por cada día — sin herencia TPH/TPT
+
         modelBuilder.Entity<LunesMedicamento>().ToTable("Lunes");
         modelBuilder.Entity<MartesMedicamento>().ToTable("Martes");
         modelBuilder.Entity<MiercolesMedicamento>().ToTable("Miercoles");
