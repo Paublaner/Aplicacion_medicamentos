@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +31,26 @@ builder.Services.AddDbContext<PostgresContext>(options =>
 
 builder.Services.AddRateLimiter(options =>
 {
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    options.AddPolicy("limite-por-usuario", httpContext =>
+    {
+
+        var partitionKey = httpContext.Connection.RemoteIpAddress?.ToString()
+                           ?? "anonimo";
+
+
+        return RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: partitionKey,
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 5, // Número máximo de intentos para esta clave
+                Window = TimeSpan.FromMinutes(5), // Ventana de tiempo
+                QueueLimit = 0, // Rechazar sin encolar al superar los 5 intentos
+                AutoReplenishment = true // Reiniciar el contador automáticamente
+            });
+    });
+
     options.AddFixedWindowLimiter("Fixed", options =>
     {
         options.PermitLimit = 100; // Número máximo de solicitudes permitidas

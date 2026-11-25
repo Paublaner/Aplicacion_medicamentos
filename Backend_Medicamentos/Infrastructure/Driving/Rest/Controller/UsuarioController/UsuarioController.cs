@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Backend_Medicamentos.Infrastructure.Driving.Rest.Controller.UsuarioController;
 
 [ApiController]
-[EnableRateLimiting("Fixed")]
+[EnableRateLimiting("limite-por-usuario")]
 public class UsuarioController (IUsuarioServicio usuarioServicio,
     IJwtServicio jwtServicio, IRefreshTokenServicio refreshTokenServicio, ILogger<UsuarioController> log) : ControllerBase
 {
@@ -84,6 +84,7 @@ public class UsuarioController (IUsuarioServicio usuarioServicio,
             return StatusCode(500, new { mensaje = "Error al generar el refresh token" });
         }
 
+        //No devuelve usuario entero porque tiene el Hash
         return Ok(new
         {
             token,
