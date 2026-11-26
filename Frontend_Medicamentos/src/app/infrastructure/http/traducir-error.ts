@@ -22,7 +22,7 @@ export function aErrorDominio(error: unknown, porDefecto: string): ErrorDominio 
     return new ErrorDominio('No se puede conectar con el servidor. Revisa la conexión a internet.', 'sin-conexion');
   }
   if (error.status === 429) {
-    return new ErrorDominio('Demasiadas peticiones. Espera un minuto e inténtalo de nuevo.');
+    return new ErrorDominio('Demasiados intentos. Espera unos minutos e inténtalo de nuevo.');
   }
 
   const tipo =

@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Sesion, Tokens } from '../../domain/models/usuario';
@@ -19,11 +19,9 @@ export class ApiAuthRepositorio extends AuthRepositorio {
   }
 
   login(correo: string, contrasena: string): Observable<Sesion> {
-    // La API hace el login por GET con los datos en la URL (pendiente de pasar a POST en el backend)
-    const params = new HttpParams().set('correo', correo).set('contrasena', contrasena);
-
+    // Por POST y en el cuerpo: si fueran en la URL, la contraseña acabaría guardada en logs e historiales
     return this.http
-      .get<Sesion>(`${this.api}/usuarios`, { params })
+      .post<Sesion>(`${this.api}/usuarios/login`, { correo, contrasena })
       .pipe(traducirError('No se ha podido iniciar sesión.'));
   }
 

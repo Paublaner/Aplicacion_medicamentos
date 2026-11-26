@@ -98,7 +98,7 @@ uvicorn servidor:app --host 0.0.0.0 --port 8000
 | Método | Ruta | Auth | Descripción |
 |---|---|---|---|
 | `POST` | `/usuarios` | — | Registro de usuario |
-| `GET` | `/usuarios?correo=&contrasena=` | — | Login: devuelve token JWT y refresh token |
+| `POST` | `/usuarios/login` | — | Login con `{ "correo", "contrasena" }` en el cuerpo: devuelve token JWT y refresh token |
 | `POST` | `/refresh-token` | — | Renueva el token JWT |
 | `POST` | `/medicamentos` | JWT | Añade un medicamento |
 | `GET` | `/medicamentos/dia/{dia}?momentoDia=` | JWT | Medicamentos de un día y momento |
@@ -113,8 +113,12 @@ Chatbot: `POST /chat` en el puerto 8000, con la cabecera `Authorization: Bearer 
 
 - Contraseñas guardadas con hash (`PasswordHasher` de ASP.NET Core).
 - Autenticación con JWT + refresh tokens revocables.
-- Rate limiting: 100 peticiones por minuto.
-- CORS abierto solo en desarrollo.
+- Login por `POST`, con la contraseña en el cuerpo y no en la URL (así no queda en logs ni historiales).
+- Rate limiting:
+  - Registro y login: 5 intentos cada 5 minutos por IP, contra ataques de fuerza bruta.
+  - Resto de la API: 100 peticiones por minuto.
+  - Si se supera el límite, la API responde `429 Too Many Requests`.
+- CORS abierto solo en desarrollo. En producción solo se admite `https://localhost`, que es el origen de la app de Capacitor.
 - Swagger solo en desarrollo.
 - Ningún secreto en el código: ver `.gitignore` y la sección de *user-secrets*.
 
@@ -129,6 +133,8 @@ Tests unitarios con xUnit, Moq y FluentAssertions en `Backend_Medicamentos/Test/
 
 ## Pendiente
 
-- Login por `POST` (ahora la contraseña viaja en la URL).
-- Mover los tests a un proyecto aparte.
-- Desplegar con Docker.
+- Pasar `main.py` y `prueba_api.py` (versiones de consola de Lucía) al login por `POST`.
+- Recordatorios con notificaciones en el móvil y marcar las tomas como hechas.
+- Editar medicamentos (`PUT`) y borrarlos por id.
+- Mover los tests a un proyecto aparte y arreglar el test de la ñ.
+- Desplegar con Docker (`docker-compose` con la API, PostgreSQL y Lucía) y dejar un solo Dockerfile.
